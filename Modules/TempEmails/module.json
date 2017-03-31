@@ -1,0 +1,16 @@
+{
+    "name": "TempEmails",
+    "alias": "tempemails",
+    "description": "",
+    "keywords": [],
+    "active": 1,
+    "order": 0,
+    "providers": [
+        "Modules\\TempEmails\\Providers\\TempEmailsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "start.php"
+    ],
+    "requires": []
+}

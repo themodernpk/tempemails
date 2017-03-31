@@ -1,0 +1,215 @@
+.modal-sidebar{
+    max-width: 35% !important;
+    width: 35% !important;
+}
+
+@media (max-width: 768px){
+    .modal-sidebar{
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+}
+
+.highlight {
+    background-color: #FFFF88;
+}
+
+.widgetTable .card-block {
+    height: auto;
+}
+
+.widgetTable table {
+    border-top: 1px solid #e4eaec;
+}
+
+.widgetTable tr > td {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    width: 33.3333%;
+    white-space: nowrap;
+}
+
+.widgetTable tr > td:first-child {
+    padding-left: 30px;
+    color: #37474f;
+}
+
+.widgetTable tr > td:last-child {
+    padding-right: 30px;
+    text-align: right;
+}
+
+.widgetTable .form-control {
+    border-color: transparent;
+}
+
+.widgetTable .form-control:focus {
+    border-color: #62a8ea;
+}
+
+
+
+.widgetScore {
+    height: -webkit-calc(100% - 30px);
+    height: calc(100% - 30px);
+}
+
+.widgetScore .card-header {
+    display: inline-block;
+    position: relative;
+    height: 270px;
+    width: 100%;
+    text-align: center;
+}
+
+.widgetScore .card-header img {
+    height: 100%;
+}
+
+.widgetScore .card-header .avatar {
+    width: 120px;
+}
+
+.widgetScore .overlay-background {
+    background: rgba(109, 69, 188, .8);
+}
+
+.widgetScore .card-block {
+    padding: 1px 30px 0;
+}
+
+.widgetScore .card-actions a {
+    color: #76838f;
+}
+
+.widgetScore .counter-number {
+    margin-top: 10px;
+    font-size: 40px;
+}
+
+.widgetScore .table-responsive {
+    border: none;
+    margin-bottom: 0;
+}
+
+.widgetScore caption {
+    padding-top: 0;
+    padding-bottom: 10px;
+    color: #37474f;
+    font-weight: 400;
+}
+
+.widgetScore .table {
+    min-width: 350px;
+    margin-bottom: 0;
+}
+
+.widgetScore .table td {
+    padding: 20px 0 19px;
+    width: 40%;
+}
+
+.widgetScore .table td:last-child {
+    width: 20%;
+    text-align: right;
+}
+
+.widgetScore .progress {
+    display: inline-block;
+    width: 100%;
+    vertical-align: middle;
+}
+
+.pk-form .form-group,
+.pk-form .actions
+{
+     display: none;
+ }
+
+.pk-form .info-label{
+    width: 20%;
+    min-width: 100px;
+    max-width: 180px;
+    text-align: right;
+}
+
+.pk-form .form-control{
+    padding: .2rem .929rem;
+    height: 2.20rem;
+}
+
+.pk-form textarea.form-control{
+    height: 3.20rem;
+}
+
+
+.pk-form.active .form-group{
+    display: block;
+    margin: 0px;
+}
+
+.pk-form.active .actions{
+    display: block;
+}
+
+.pk-form.active .on-edit-hide{
+    display: none;
+}
+
+
+.pk-form.active span{
+    display: none;
+}
+
+.btn-href
+{
+    text-decoration: none !important;
+}
+
+.alertify, .alertify-cover, .alertify-logs {
+    z-index: 99999;
+}
+
+.form-group .text-help
+{
+    font-size: 11px;
+}
+
+.page-user .page-content form {
+    margin-bottom: 0px;
+}
+
+.form-control[name=password] {
+    background-color: #fff;
+}
+
+.form-control[name=username] {
+    background-color: #fff;
+}
+
+.page-user-sortlist{
+    position: absolute;
+    right: 0;
+    top: -5px;
+    z-index: 2;
+}
+
+.page-user .page-content .nav-tabs-horizontal {
+    position: relative;
+}
+
+@media (max-width: 991px) {
+    .page-user .page-content .page-user-sortlist {
+        top: -10px;
+    }
+}
+
+@media (max-width: 479px) {
+    .page-user .page-content .list-group-item .media-body, .page-user .page-content .list-group-item .media-left, .page-user .page-content .list-group-item .media-right {
+        display: block;
+        text-align: center;
+    }
+
+
+
+}

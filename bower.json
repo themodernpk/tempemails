@@ -1,0 +1,20 @@
+{
+  "name": "ph",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Pradeep Kumar <webreinvent@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/webreinvent/ph",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "paging": "^1.2.0"
+  }
+}

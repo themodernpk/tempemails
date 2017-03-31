@@ -1,0 +1,95 @@
+
+.slidePanel-inner {
+    padding-top: 20px;
+    padding-bottom: 150px;
+    
+}
+
+.slidePanel-header {
+    background-color: #57c7d4;
+    position: relative;
+    padding: 20px 30px;
+    padding-right: 120px;
+    color: #fff;
+}
+
+.slidePanel-header::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.slidePanel-actions{
+    min-height:32px;
+}
+
+.slidePanel .actions-top {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+.slidePanel .actions-bottom {
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+}
+
+.slidePanel .mail-header {
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 20px;
+}
+
+.slidePanel .mail-header::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.slidePanel .mail-header-main {
+    display: inline-block;
+}
+
+.slidePanel .mail-header-right {
+    float: right;
+}
+
+.slidePanel .mail-header .time {
+    color: #a3afb7;
+}
+
+.slidePanel .mail-header .avatar {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.slidePanel .mail-header .identity .icon {
+    margin-left: 10px;
+    margin-right: 6px;
+}
+
+.slidePanel .mail-content p {
+    margin-bottom: 20px;
+}
+
+.slidePanel .mail-content p:last-child {
+    margin-bottom: 0;
+}
+
+.slidePanel .mail-content + .mail-attachments {
+    margin-top: 40px;
+}
+
+.slidePanel .mail-attachments {
+    margin-bottom: 20px;
+}
+
+.slidePanel .mail-attachments .wb-paperclip {
+    margin-right: 10px;
+}
+
+.slidePanel .mail-attachments .list-group-item {
+    padding: 0;
+}
