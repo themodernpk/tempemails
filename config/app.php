@@ -12,7 +12,7 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => 'Pharneechar',
+    'name' => 'TempEmails.io',
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +51,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost/pharneechar/'),
+    'url' => env('APP_URL', 'https://tempemails.io/'),
 
     /*
     |--------------------------------------------------------------------------
@@ -181,9 +181,11 @@ return [
 
 
 
+
 	    Modules\Core\Providers\CoreServiceProvider::class,
 	    Modules\Core\Providers\CoreEventServiceProvider::class,
         Stevebauman\Purify\PurifyServiceProvider::class,
+        Jenssegers\Agent\AgentServiceProvider::class,
 
 	    //
 
@@ -257,6 +259,7 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'Indipay' => Softon\Indipay\Facades\Indipay::class,
         'Purify' => Stevebauman\Purify\Facades\Purify::class,
+        'Agent' => Jenssegers\Agent\Facades\Agent::class,
 
 
 

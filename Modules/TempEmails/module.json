@@ -9,6 +9,8 @@
         "Modules\\TempEmails\\Providers\\TempEmailsServiceProvider"
     ],
     "aliases": {},
+    "life_span_without_login": 168,
+    "life_span_with_login": 720,
     "files": [
         "start.php"
     ],

@@ -5,6 +5,9 @@ namespace Modules\TempEmails\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Jenssegers\Agent\Agent;
+
+use Modules\Core\Entities\User;
 use Modules\TempEmails\Entities\TeAccount;
 use Modules\TempEmails\Entities\TeMail;
 use Modules\TempEmails\Entities\TeStat;
@@ -20,8 +23,13 @@ class TempEmailsController extends Controller
     //-----------------------------------------------------------
     public function index(Request $request)
     {
-        $this->data->title = "Temporary Disposable Email Accounts";
-        $this->data->username = strtolower(str_random(5));
+        $this->data->title = "TempEmails.io | Free Temporary Disposable Email | Developer Tool";
+        $this->data->description = "TempEmails.io is a tool to Temporary Disposable Emails with a click. No registration is required. It can help developer to debug the transactional emails and others can use theses temporary to register on other website to avoid spam.";
+
+        $this->data->accounts = TeStat::where('type', 'account')->count();
+        $this->data->emails = TeStat::where('type', 'email')->count();
+        $this->data->agent = new Agent();
+
         return view( "tempemails::pages.index" )
             ->with( "data", $this->data );
     }
@@ -38,9 +46,18 @@ class TempEmailsController extends Controller
         return redirect()->route('te.apps', [$inbox])->withCookie(cookie()->forever('inbox', $inbox));
     }
     //-----------------------------------------------------------
+    public function stats(Request $request)
+    {
+        $response['data']['count']['emails'] = TeStat::where('type', 'account')->count();
+        $response['data']['count']['accounts'] = TeStat::where('type', 'email')->count();
+        $response['status'] = 'success';
+        return response()->json($response);
+    }
+    //-----------------------------------------------------------
     public function apps(Request $request, $inbox)
     {
-        $this->data->title = "Temporary Accounts";
+
+        $this->data->title = "TempEmails.io | Free Temporary Disposable Email | Developer Tool";
         $this->data->inbox = $inbox;
 
         return view( "tempemails::pages.app" )
@@ -49,15 +66,16 @@ class TempEmailsController extends Controller
     //-----------------------------------------------------------
     public function accounts(Request $request, $inbox)
     {
-        $this->data->title = "Temporary Accounts";
+        $this->data->title = "TempEmails.io | Free Temporary Disposable Email | Developer Tool";
         return view( "tempemails::pages.accounts" )
             ->with( "data", $this->data );
     }
     //-----------------------------------------------------------
     public function accountList(Request $request, $inbox)
     {
-        $list = TeAccount::select('id', 'inbox', 'username', 'email', 'hours', 'created_at')->where('inbox', $inbox);
+        $list = TeAccount::select('id', 'inbox', 'username', 'email', 'expired_at', 'expired', 'created_at')->where('inbox', $inbox);
         $list->withCount('unreadMails');
+        $list->withCount('mails');
 
         $list->orderBy('created_at', 'DESC');
         $response['data'] = $list->get();
@@ -136,7 +154,9 @@ class TempEmailsController extends Controller
         $list = TeMail::where('id', $id);
         $list->select(['message']);
         $response = $list->first();
-        return response($response->message, 200);
+
+        $message = $response->formattedHtml();
+        return response($message, 200);
     }
     //-----------------------------------------------------------
     public function generateAccount(Request $request, $inbox)
@@ -154,12 +174,14 @@ class TempEmailsController extends Controller
                 $insert['core_user_id'] = \Auth::user()->id;
                 $insert['created_by'] = \Auth::user()->id;;
             }
-            $insert['hours'] = 168;
+            $insert['hours'] = \Config::get("tempemails.life_span_without_login");
+
         } else
         {
-            $insert['hours'] = 24;
-        }
+            $insert['hours'] = \Config::get("tempemails.life_span_with_login");
 
+        }
+        $insert['expired_at'] = \Carbon::now()->addHours($insert['hours']);
 
         $account = TeAccount::create($insert);
 
@@ -246,12 +268,60 @@ class TempEmailsController extends Controller
             return response()->json($response);
         }
 
-        TeMail::where('te_account_id', $request->get('id'))->delete();
+        $list = TeMail::select('id', 'te_account_id')->where('te_account_id', $request->get('id'))
+            ->withTrashed()->get();
+
+        if($list)
+        {
+            foreach ($list as $item)
+            {
+                TeMail::deleteMail($item->id);
+            }
+        }
 
         $response['status'] = 'success';
         return response()->json($response);
     }
     //-----------------------------------------------------------
+    public function notifyAdmin(Request $request)
+    {
+        $rules = array(
+            'email' => 'required|email',
+            'category' => 'required',
+            'message' => 'required',
+        );
+
+        $validator = \Validator::make( $request->toArray(), $rules);
+        if ( $validator->fails() ) {
+
+            $errors             = errorsToArray($validator->errors());
+            $response['status'] = 'failed';
+            $response['errors'] = $errors;
+
+            if ($request->ajax()) {
+                return response()->json($response);
+            } else {
+                return redirect()->back()->withInput()->withErrors($errors);
+            }
+        }
+
+        $subject = "[TempEmail.io] ".$request->get('email')." | Category: ".$request->get('category');
+        $message = $request->get('message');
+
+
+        try{
+            User::notifyAdmins($subject, $message);
+            $response['status'] = 'success';
+
+        }catch(\Exception $e)
+        {
+            $response['status'] = 'failed';
+            $response['errors'][] = $e->getMessage();
+        }
+
+        return response()->json($response);
+
+    }
     //-----------------------------------------------------------
     //-----------------------------------------------------------
 

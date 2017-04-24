@@ -11,13 +11,15 @@
 
     <link href="https://fonts.googleapis.com/css?family=Baloo+Bhaina|Source+Sans+Pro:200|Roboto" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/alertifyjs/1.9.0/css/alertify.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css" />
+    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/alertify.min.css" />
+    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/highlight-default.min.css"/>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/nprogress.css" />
     <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/simple-grid.css" />
+    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/index/css/magnific-popup.css">
     <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/style.css" />
+
 
 
     <!---page specific-->
@@ -29,6 +31,11 @@
 @include("tempemails::pages.partials.tracking_codes")
 
 <div id="app" v-cloak>
+
+
+<!--start op popup-->
+@include("tempemails::pages.partials.contact_popup")
+<!--End op popup-->
 
     <!--urls-->
     <input type="hidden" data-type="url" name="base" value="{{url("/")}}" />
@@ -47,19 +54,19 @@
 
             </div>
             <div class="logo fl">
-                <a href="https://tempemails.io" class="thick">tempemails<span class="thin">.io</span></a>
+                <a href="https://tempemails.io" class="thick">tempemails</span><span class="thin">.io</span></a>
             </div>
         </div>
 
-{{--        <div class="fr">
+        <div class="fr">
             <div  class="fr login ">
-                <a href="#" class="thin"><i class="fa fa-user"></i> LOGIN</a>
+                <a class="thin popup-with-zoom-anim" href="#small-dialog"><i class="fa fa-bug"></i> Buzz Me!</a>
             </div>
-            <div class="fr register">
+            {{--<div class="fr register">
                 Extend email expiry date up to 7 days.
                 <a href="#" class="btn btn-success">REGISTER</a>
-            </div>
-        </div>--}}
+            </div>--}}
+        </div>
 
     </div>
     <!--/header-->
@@ -74,22 +81,31 @@
                 <h5><i class="fa fa-envelope"></i> EMAIL ACCOUNTS</h5>
 
                 <ul class="scrollbar" style="height: 500px">
-                    <li v-if="accounts" v-for="account in accounts">
-                        <a class="email-link clickToCopy" v-bind:href="account.email"
-                           v-on:click="setActiveAccount($event, account)">@{{ account.email }}</a>
+                    <li class="account-item" v-if="accounts" v-for="account in accounts">
+                        <a class="email-link clickToCopy"
+                           v-bind:class="{'strikethrough': account.expired}"
+                           v-bind:href="account.email"
+                           v-on:click="setActiveAccount($event, account)">@{{ account.email }}
+
+                            <span class="mail-count unread" v-if="account.unread_mails_count > 0">@{{ account.unread_mails_count }} /
+                            @{{ account.mails_count }}
+                            </span>
+                            <span class="mail-count read" v-else>
+                                @{{ account.mails_count }}
+                            </span>
+                            <p><i class="fa fa-clock-o"></i> Expire: @{{ account.remaining_time }}</p>
+                        </a>
                         <span>
                         <a href="#" class="account-close" v-on:click="deleteAccount($event, account)"><i class="fa fa-times-circle-o"></i></a>
                         </span>
 
-                        <label v-if="account.unread_mails_count > 0">@{{ account.unread_mails_count }}</label>
                     </li>
-
 
                 </ul>
 
 
             </div>
-            <button class="new-email" v-on:click="generateAccount()"><i class="fa fa-plus"></i> &nbsp; ADD NEW EMAIL</button>
+            <button class="new-email" v-on:click="generateAccount()"><i class="fa fa-plus"></i> &nbsp; ADD NEW EMAIL ACCOUNT</button>
         </div>
         <!--/account list-->
 
@@ -129,7 +145,9 @@
                             <div class="emails-header">
                                 <div class="emails-header-left fl">
 
-                                    <input class="emails-search" placeholder="Search Not Enabled">
+                                    <input class="emails-search" v-model="email_search"
+                                           v-on:keyup="filterEmails()"
+                                           placeholder="Search By Subject">
 
                                 </div>
 
@@ -246,26 +264,29 @@
 
                                 <div class="tabs-con row">
                                     <ul class='tabs'>
-                                        <li><a href='#html' v-on:click="tabs($event)" class="active">HTML</a></li>
+                                        <li><a href='#html' v-on:click="tabs($event)" id="htmlTab" class="active">HTML</a></li>
                                         <li><a href='#htmlSource' id="showHtmlSource" v-on:click="tabs($event)" >HTML Source</a></li>
                                         <li><a href='#text' v-on:click="tabs($event)">Text</a></li>
                                         <li><a href='#raw' v-on:click="tabs($event)">Raw</a></li>
                                     </ul>
                                 </div>
-
                                 <div class="tab-content-con row">
                                     <div id='html' class="tab-content">
-                                        <iframe style="width: 100%; height: 100%;
-                                                border: none; outline: none; overflow:auto;"
+                                        <iframe id="iframeTag" style="width: 100%; height: 100%;
+                                        min-height: 300px;
+                                                border: none; outline: none; display: block;"
                                                 v-bind:src="email_fetched.iframe"></iframe>
+
                                     </div>
                                     <div id='htmlSource' class="tab-content hide">
                                         <pre><code class="html" >
                                             @{{ email_fetched.formatted }}
                                         </code></pre>
                                     </div>
-                                    <div id='text' class="tab-content hide">
-                                        @{{ email_fetched.message_text }}
+                                    <div id='text' class="tab-content hide" >
+
+                                        <div v-html="email_fetched.formatted_text"></div>
+
                                     </div>
 
                                     <div id='raw' class="tab-content hide">
@@ -301,17 +322,18 @@
 
 
 <!--common js-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.4/vue.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.2.1/vue-resource.js"></script>
-<script src="http://areaaperta.com/nicescroll/js/jquery.nicescroll.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
-<script src="https://cdn.jsdelivr.net/alertifyjs/1.9.0/alertify.min.js"></script>
+<script src="{{moduleAssets('tempemails')}}/jquery.min.js"></script>
+<script src="{{moduleAssets('tempemails')}}/moment.min.js"></script>
+<script src="{{moduleAssets('tempemails')}}/vue.js"></script>
+<script src="{{moduleAssets('tempemails')}}/vue-resource.js"></script>
+<script src="{{moduleAssets('tempemails')}}/jquery.nicescroll.min.js"></script>
+<script src="{{moduleAssets('tempemails')}}/nprogress.min.js"></script>
+<script src="{{moduleAssets('tempemails')}}/alertify.min.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.1/clipboard.js"></script>
-<script src="https://js.pusher.com/4.0/pusher.min.js"></script>
+<script src="{{moduleAssets('tempemails')}}/highlight.min.js"></script>
+<script src="{{moduleAssets('tempemails')}}/clipboard.js"></script>
+<script src="{{moduleAssets('tempemails')}}/pusher.min.js"></script>
+<script src="{{moduleAssets('tempemails')}}/index/js/jquery.magnific-popup.min.js"></script>
 
 <script src="{{moduleAssets('tempemails')}}/Pagination.js"></script>
 <script src="{{moduleAssets('tempemails')}}/VueCommon.js"></script>
@@ -321,9 +343,6 @@
 <script>
     $(document).ready(function()
     {
-
-
-
 
 
         var browser_h = $(window).height();

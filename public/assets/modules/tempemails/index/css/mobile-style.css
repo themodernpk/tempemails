@@ -1,0 +1,7 @@
+.main_video{ padding-bottom:30px;}
+.top_cont {position: static; margin-top: -15%;}
+
+
+@media (max-width:35rem){
+.main_video{ padding-bottom:20px;}
+}

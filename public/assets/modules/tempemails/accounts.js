@@ -16,6 +16,8 @@ const app = new VueCommon({
         emails: null,
         email_active: null,
         email_fetched: null,
+        email_filter: null,
+        email_search: null,
         new_email: null,
         pusher: null,
 
@@ -121,6 +123,13 @@ const app = new VueCommon({
             {
                 event.preventDefault();
             }
+
+            if(account.expired == 1)
+            {
+                alertify.error('Account is expired');
+                return false;
+            }
+
             this.account_active = account;
 
             console.log(account);
@@ -129,6 +138,11 @@ const app = new VueCommon({
 
         },
         //---------------------------------------------------------------------
+        clickToCopy: function () {
+
+        },
+        //---------------------------------------------------------------------
+
         fetchEmails: function () {
             this.email_fetched = null;
             var url = this.urls.inbox+"/email/list";
@@ -141,6 +155,7 @@ const app = new VueCommon({
             NProgress.done();
             this.emails = [];
             this.emails = data.data;
+            this.email_filter = data.data;
         },
 
         //---------------------------------------------------------------------
@@ -197,6 +212,8 @@ const app = new VueCommon({
 
             $(content).removeClass('hide');
 
+
+
         },
         //---------------------------------------------------------------------
         markAllAsRead: function (event, account) {
@@ -210,8 +227,26 @@ const app = new VueCommon({
             var url = this.urls.inbox+"/delete/all/emails";
             var params = {id: account.id};
             this.processHttpRequest(url, params, this.fetchEmails);
-        }
+        },
         //---------------------------------------------------------------------
+        filterEmails: function () {
+
+            console.log("testing", this.email_search);
+
+            var self = this;
+            if(this.email_search != "")
+            {
+                this.emails = this.email_filter.filter(function (item)
+                {
+                    return item.subject.toLowerCase().match(self.email_search);
+                });
+            } else
+            {
+                this.emails = this.email_filter;
+            }
+
+
+        }
         //---------------------------------------------------------------------
         //---------------------------------------------------------------------
         //---------------------------------------------------------------------
@@ -239,15 +274,42 @@ const app = new VueCommon({
     //----------------------------------------------------------
     $('body').on('click', '.clickToCopy', function (e) {
         e.preventDefault();
-        alertify.success("Email Copied");
+
+        if(!$(this).hasClass( "strikethrough" ))
+        {
+            alertify.success("Email Copied");
+        }
+
     });
 
     //----------------------------------------------------------
 
+    $('body').on('click', '#htmlTab', function (e) {
+        e.preventDefault();
 
+        var browser_h = $(window).height();
+        var middle_h = browser_h-320;
+
+        console.log("height", middle_h);
+
+        $("#html").css('height', middle_h);
+
+        document.getElementById('iframeTag').contentWindow.location.reload();
+
+    });
 
     //----------------------------------------------------------
-
+    $('.popup-with-zoom-anim').magnificPopup({
+        type: 'inline',
+        fixedContentPos: false,
+        fixedBgPos: true,
+        overflowY: 'auto',
+        closeBtnInside: true,
+        preloader: false,
+        midClick: false,
+        removalDelay: 300,
+        mainClass: 'my-mfp-zoom-in'
+    });
 
     //----------------------------------------------------------
     //----------------------------------------------------------

@@ -630,7 +630,6 @@ a{
 .tab-content{
     padding: 10px 20px;
     font-size: 12px;
-    overflow: auto;
     margin-bottom: 20px;
 }
 
@@ -713,3 +712,43 @@ a{
     font-size: 11px;
 }
 
+.alertify-notifier .ajs-error
+{
+    background: #e74c3c;
+    padding: 6px 10px;
+    text-align: center;
+    color: #fff;
+    border-radius: .286rem;
+    -webkit-box-shadow: 0 2px 12px rgba(0, 0, 0, .2);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .2);
+    display: block;
+    font-size: 11px;
+}
+
+#htmlTab{
+    height: calc(100% - 320) !important;
+}
+
+.mail-count.unread{
+    color: #fff;
+}
+
+.mail-count.read{
+    color: #686e81;
+}
+
+.account-item p{
+    color: #686e81;
+    font-style: italic;
+    font-size: 11px;
+    margin: -5px 0px 0px 0px ;
+    padding: 0px 0px 0px 0px ;
+}
+.account-item p i{
+    margin-right: 5px;
+    color: #686e81;
+}
+
+.strikethrough {
+    text-decoration: line-through;
+}

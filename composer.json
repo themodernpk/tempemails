@@ -23,7 +23,8 @@
         "bugsnag/bugsnag-laravel": "^2.0",
         "intervention/image": "^2.3",
         "php-imap/php-imap": "~2.0",
-        "stevebauman/purify": "1.1.*"
+        "stevebauman/purify": "1.1.*",
+        "jenssegers/agent": "^2.5"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.6",

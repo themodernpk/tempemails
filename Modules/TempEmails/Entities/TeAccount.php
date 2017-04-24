@@ -4,6 +4,7 @@ namespace Modules\TempEmails\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Core\Libraries\Date;
 use Modules\TempEmails\Events\NewEmail;
 
 class TeAccount extends Model
@@ -14,7 +15,7 @@ class TeAccount extends Model
     protected $table = 'te_accounts';
     //-------------------------------------------------
     protected $dates = [
-        'created_at', 'updated_at', 'deleted_at'
+        'created_at', 'updated_at', 'deleted_at', 'expired_at'
     ];
     //-------------------------------------------------
     protected $dateFormat = 'Y-m-d H:i:s';
@@ -22,15 +23,21 @@ class TeAccount extends Model
 
     protected $fillable = [
         'core_user_id', 'inbox', 'username', 'email',
-        'hours', 'ip',
+        'hours', 'ip', 'expired_at', 'expired',
         'created_by', 'updated_by', 'deleted_by',
     ];
 
     //-------------------------------------------------
     protected $appends  = [
+        'remaining_time',
     ];
     //-------------------------------------------------
 
+    //-------------------------------------------------
+    public function getRemainingTimeAttribute()
+    {
+        return $this->attributes['remaining_time']= \Carbon::parse($this->expired_at)->diffForHumans();
+    }
     //-------------------------------------------------
     public function scopeCreatedBy($query, $user_id)
     {
@@ -101,19 +108,18 @@ class TeAccount extends Model
     //-------------------------------------------------
     public static function syncMessages($request)
     {
+
         $inbox_config['hostname']= env('IMAP_HOST');
         $inbox_config['email']= env('IMAP_EMAIL');
         $inbox_config['password']= env('IMAP_PASSWORD');
         $inbox_config['upload_path']= 'files/attachments';
 
-
         $mailbox = new \PhpImap\Mailbox($inbox_config['hostname'], $inbox_config['email'],
                                         $inbox_config['password'], $inbox_config['upload_path']);
 
         $sync_from = date('d F Y');
-        //$mailUIDs = $mailbox->searchMailBox('SINCE "'.$sync_from.'"', SE_UID);
-        $mailUIDs = $mailbox->searchMailBox('UNSEEN', SE_UID);
-
+        $mailUIDs = $mailbox->searchMailBox('SINCE "'.$sync_from.'"', SE_UID);
+        //$mailUIDs = $mailbox->searchMailBox('UNSEEN', SE_UID);
 
         foreach ($mailUIDs as $uid)
         {
@@ -173,11 +179,12 @@ class TeAccount extends Model
                         $account_d = explode("@", $account_item['email']);
                         $account_insert['username'] = $account_d[0];
                         $account_insert['email'] = $account_item['email'];
-                        $account_insert['hours'] = 24;
+                        $account_insert['hours'] = \Config::get("tempemails.life_span_without_login");
                         if (\Auth::user())
                         {
-                            $account_insert['hours'] = 168;
+                            $account_insert['hours'] = \Config::get("tempemails.life_span_with_login");
                         }
+                        $insert['expired_at'] = \Carbon::now()->addHours($account_insert['hours']);
                         $account_insert['ip'] = $request->ip();
 
                         if (\Auth::user())
@@ -299,5 +306,109 @@ class TeAccount extends Model
 
 
     }
+    //-------------------------------------------------
+    public static function checkExpiryIsNull()
+    {
+        $exist = TeAccount::whereNull('expired_at')->exists();
+
+        if(!$exist)
+        {
+            $response['status'] = 'success';
+            $response['message'][]= 'No Account is Expired';
+            return $response;
+        }
+        $list = TeAccount::whereNull('expired_at')->get();
+
+        foreach ($list as $account)
+        {
+            $account->expired_at = $account->created_at->addHours($account->hours);
+            $account->save();
+        }
+
+        $response['status'] = 'success';
+        $response['message'][]= 'Expire date are set';
+        return $response;
+
+    }
+    //-------------------------------------------------
+    public static function checkExpiry()
+    {
+
+        $now = \Carbon::now();
+        $date_time = $now->format('Y-m-d H:i:s');
+        $expired = TeAccount::where('expired_at', '<', $date_time)->whereNull('expired')->exists();
+
+        if(!$expired)
+        {
+            $response['status'] = 'success';
+            $response['message'][]= 'No Account is Expired';
+            return $response;
+        }
+
+        $expired = TeAccount::where('expired_at', '<', $date_time)->whereNull('expired')->update(['expired' => 1]);
+
+        $response['status'] = 'success';
+        $response['message'][]= $expired.' Accounts are marked as expired';
+        return $response;
+
+    }
+    //-------------------------------------------------
+    public static function deleteExpiredAccounts()
+    {
+        //find expired account passed 7 days
+        $date = \Carbon::now()->subDays(7)->format("Y-m-d");
+
+        $expired_accounts = TeAccount::withTrashed()->where('expired', 1)
+            ->where('expired_at', '<', $date)
+            ->get();
+
+        if(!$expired_accounts)
+        {
+            $response['status'] = 'failed';
+            $response['errors'][]= 'No account is expired';
+            return $response;
+        }
+
+        if($expired_accounts)
+        {
+            foreach ($expired_accounts as $account)
+            {
+                TeAccount::deleteAccount($account->id);
+            }
+        }
+
+        $response['status'] = 'success';
+        return $response;
+    }
+    //-------------------------------------------------
+    public static function deleteAccount($id)
+    {
+
+        $account = TeAccount::withTrashed()->where('id', $id)->first();
+        if(!$account)
+        {
+            $response['status'] = 'failed';
+            $response['errors'][]= 'Account not exist';
+            return $response;
+        }
+
+
+        //check if mails exist
+        if($account->mails()->exists() > 0)
+        {
+           foreach ($account->mails()->get() as $mail)
+           {
+               TeMail::deleteMail($mail->id);
+           }
+        }
+
+        $account->delete();
+        $response['status'] = 'failed';
+        $response['messages'][]= 'Account deleted';
+        return $response;
+
+    }
+    //-------------------------------------------------
+    //-------------------------------------------------
     //-------------------------------------------------
 }

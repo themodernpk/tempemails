@@ -29,7 +29,7 @@ class TeMail extends Model
 
     //-------------------------------------------------
     protected $appends  = [
-        'iframe',
+        'iframe', 'formatted_text'
     ];
     //-------------------------------------------------
 
@@ -41,20 +41,32 @@ class TeMail extends Model
     }
 
     //-------------------------------------------------
+    public function getFormattedTextAttribute()
+    {
+        return $this->attributes['formatted_text']=nl2br($this->message_text);
+    }
+    //-------------------------------------------------
     public function formattedHtml()
     {
 
+        if($this->message)
+        {
+            $dom = new DOMDocument();
+            // we want nice output
+            $dom->preserveWhiteSpace = false;
+            $dom->loadHTML($this->message);
+            $dom->formatOutput = true;
+            $format = new \Format();
+            $fomatted = $format->HTML($this->message);
+        } else
+        {
+            $fomatted = '<p style="background-color: #fff6e5; font-family: Arial;
+                            padding: 10px 10px; color: #ba7900;
+                            font-size: 12px;">Email format is "text/plain", please check "Text" tab</p>';
+        }
 
-        $dom = new DOMDocument();
-        // we want nice output
-        $dom->preserveWhiteSpace = false;
-        $dom->loadHTML($this->message);
-        $dom->formatOutput = true;
-        $format = new \Format();
 
-
-
-        return $format->HTML($this->message);;
+        return $fomatted;
     }
     //-------------------------------------------------
     public function scopeCreatedBy($query, $user_id)
@@ -138,14 +150,58 @@ class TeMail extends Model
                                'te_mail_id', 'id');
     }
     //-------------------------------------------------
-    protected static function boot() {
+/*    protected static function boot() {
         parent::boot();
 
         static::deleting(function($check) {
             $check->contacts()->delete();
             $check->attachments()->delete();
         });
-    }
+    }*/
     //-------------------------------------------------
+    public static function deleteMail($id)
+    {
+        $mail = TeMail::withTrashed()->where('id', $id)->first();
+
+
+        if(!$mail)
+        {
+            $response['status'] = 'failed';
+            $response['errors'][]= 'Mail not exist';
+            return $response;
+        }
+
+
+        //delete attachments
+        $attachments = TeMailAttachment::where('te_mail_id', $mail->id)->withTrashed()->get();
+
+        if($attachments)
+        {
+            $base_url = \URL::to("/");
+            foreach ($attachments as $attachment)
+            {
+                $file_path = str_replace($base_url."/", "", $attachment->url);
+                \File::delete($file_path);
+                $attachment->delete();
+            }
+        }
+
+        //delete contacts
+        $contacts = TeContact::where('te_mail_id', $mail->id)->withTrashed()->get();
+
+        if($contacts)
+        {
+            foreach ($contacts as $contact)
+            {
+                $contact->delete();
+            }
+        }
+
+        //delete mails
+        $mail->delete();
+
+        //delete mail from server
+
+    }
     //-------------------------------------------------
 }

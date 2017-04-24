@@ -15,8 +15,11 @@ Route::group(
         Route::any('/per/minute', 'CronController@perMinute')
             ->name('te.cron.per.minute');
         //------------------------------------------------
-        Route::any('/per/minute', 'CronController@perMinute')
-            ->name('te.cron.per.minute');
+        Route::any('/per/hour', 'CronController@perHour')
+            ->name('te.cron.per.hour');
+        //------------------------------------------------
+        Route::any('/per/day', 'CronController@perDay')
+            ->name('te.cron.per.day');
         //------------------------------------------------
         Route::any('/auth/pusher', 'CronController@authPusher')
             ->name('te.pusher');
@@ -42,6 +45,12 @@ Route::group(
         //------------------------------------------------
         Route::any('/redirect', 'TempEmailsController@checkCookies')
             ->name('te.app.redirect');
+        //------------------------------------------------
+        Route::any('/stats', 'TempEmailsController@stats')
+            ->name('te.stats');
+        //------------------------------------------------
+        Route::any('/notify/admin', 'TempEmailsController@notifyAdmin')
+            ->name('te.notify.admin');
         //------------------------------------------------
         Route::any('/email/iframe/{encrypted_id}', 'TempEmailsController@emailiFrame')
             ->name('te.email.iframe');
