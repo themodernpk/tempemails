@@ -123,7 +123,8 @@
                             name="search"
                             v-model="new_email_code"
                             v-on:blur="checkNewEmailCode()"
-                            maxlength="5"
+                            v-on:focus="emptyNewEmailCode()"
+                            maxlength="10"
                             class="SearchBox-query address"/>
 
                     <input

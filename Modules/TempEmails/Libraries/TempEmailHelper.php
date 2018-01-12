@@ -11,11 +11,30 @@ class TempEmailHelper
     public static function generateAccount($request, $inbox)
     {
 
+
+
+
+
         $insert['inbox'] = $inbox;
 
         if($request->has('username'))
         {
-            $insert['username'] = $request->get('username');
+
+
+            $rules = array(
+                'username' => 'required|alpha_num',
+            );
+
+            $validator = \Validator::make( $request->toArray(), $rules);
+            if ( $validator->fails() ) {
+
+                $errors             = errorsToArray($validator->errors());
+                $response['status'] = 'failed';
+                $response['errors'] = $errors;
+                return $response;
+            }
+
+            $insert['username'] = strtolower($request->get('username'));
         } else
         {
             $insert['username'] = strtolower(str_random(5));

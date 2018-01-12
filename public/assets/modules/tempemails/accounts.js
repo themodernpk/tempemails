@@ -103,6 +103,10 @@ const app = new VueCommon({
             }
         },
         //---------------------------------------------------------------------
+        emptyNewEmailCode: function () {
+            this.new_email_code = null;
+        },
+        //---------------------------------------------------------------------
         generateNewEmailCode: function () {
 
             this.new_email_code = this.genUID();
