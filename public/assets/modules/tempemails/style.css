@@ -260,7 +260,7 @@ a{
 }
 
 .account-list ul li{
-
+    position: relative;
 }
 
 .account-list ul li span{
@@ -270,6 +270,11 @@ a{
     display: inline-block;
     width: 30px;
     float: right;
+
+}
+
+.account-close-con{
+    position: absolute;
 }
 
 .account-list ul li span a{
@@ -837,7 +842,7 @@ a{
     font-weight: normal;
     font-style: normal;
     color: #797979;
-    
+
 }
 
 .SearchBox-query {

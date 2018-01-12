@@ -69,7 +69,7 @@
 
         <div class="fr">
             <div  class="fr login ">
-                <a class="thin popup-with-zoom-anim" href="#small-dialog"><i class="fa fa-bug"></i> Buzz Me!</a>
+                <a class="thin popup-with-zoom-anim" href="#small-dialog"><i class="fa fa-bug"></i> Report Bug</a>
             </div>
             {{--<div class="fr register">
                 Extend email expiry date up to 7 days.
@@ -104,7 +104,7 @@
                             </span>
                             <p><i class="fa fa-clock-o"></i> Expire: @{{ account.remaining_time }}</p>
                         </a>
-                        <span>
+                        <span class="account-close-con">
                         <a href="#" class="account-close" v-on:click="deleteAccount($event, account)"><i class="fa fa-times-circle-o"></i></a>
                         </span>
 
@@ -185,7 +185,7 @@
 
                                     <input class="emails-search" v-model="email_search"
                                            v-on:keyup="filterEmails()"
-                                           placeholder="Search By Subject">
+                                           placeholder="Search by Email Subject">
 
                                 </div>
 
