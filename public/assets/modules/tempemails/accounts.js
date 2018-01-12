@@ -217,6 +217,7 @@ const app = new VueCommon({
             this.emails = this.updateArray(this.emails, this.email_active);
             var url = this.urls.inbox+"/email/details";
             var params = {id: email.id};
+
             this.processHttpRequest(url, params, this.fetchEmailAfter);
         },
         //---------------------------------------------------------------------
@@ -224,6 +225,30 @@ const app = new VueCommon({
             this.email_fetched = data;
             this.activateTabs();
             this.listAccounts();
+            this.resizeIframe();
+            var self = this;
+
+            this.$nextTick(function () {
+
+                self.resizeIframe();
+
+
+            });
+        },
+        //---------------------------------------------------------------------
+        resizeIframe: function () {
+
+
+
+            $('iframe').load(function() {
+                this.style.height = 0;
+            this.style.height =
+                (this.contentWindow.document.body.offsetHeight +100)+ 'px';
+
+            console.log('-->height', this.style.height);
+
+            });
+            $("html, body").animate({ scrollTop: 0 }, "slow");
         },
         //---------------------------------------------------------------------
         activateTabs: function () {

@@ -914,3 +914,7 @@ a{
     height: 20px !important;
     width: 80%  !important;
 }
+
+.tr-active{
+    background: #f2f2f2;
+}

@@ -207,7 +207,10 @@
 
 
                                 <table class="table ">
-                                    <tr v-for="email in emails" class="fetchEmail" v-on:click="fetchEmail($event, email)">
+                                    <template v-if="email_active">
+                                    <tr  v-for="email in emails" class="fetchEmail"
+                                         v-bind:class="{'tr-active': email_active.id == email.id}"
+                                         v-on:click="fetchEmail($event, email)">
                                         <td width="15"><span class="tag-circle">w</span></td>
                                         <td><div class="subject" v-bind:class="{'read': email.read}">@{{ email.subject }}
                                                 <span class="text-small">From: @{{ email.from[0].email }}</span>
@@ -215,6 +218,23 @@
                                         </td>
                                         <td><div class="time">@{{ fromNow(email.received_at) }}</div></td>
                                     </tr>
+
+                                    </template>
+
+
+                                    <template v-else>
+                                        <tr  v-for="email in emails" class="fetchEmail"
+
+                                             v-on:click="fetchEmail($event, email)">
+                                            <td width="15"><span class="tag-circle">w</span></td>
+                                            <td><div class="subject" v-bind:class="{'read': email.read}">@{{ email.subject }}
+                                                    <span class="text-small">From: @{{ email.from[0].email }}</span>
+                                                </div>
+                                            </td>
+                                            <td><div class="time">@{{ fromNow(email.received_at) }}</div></td>
+                                        </tr>
+
+                                    </template>
 
                                 </table>
 
@@ -310,8 +330,7 @@
                                 </div>
                                 <div class="tab-content-con row">
                                     <div id='html' class="tab-content">
-                                        <iframe id="iframeTag" style="width: 100%; height: 100%;
-                                        min-height: 300px;
+                                        <iframe id="iframeTag" style="width: 100%;
                                                 border: none; outline: none; display: block;"
                                                 v-bind:src="email_fetched.iframe"></iframe>
 
