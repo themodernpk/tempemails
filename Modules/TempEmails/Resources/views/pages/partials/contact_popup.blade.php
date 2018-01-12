@@ -10,11 +10,11 @@
                 <div class="control-group">
                     <div class="control">
                         <label for="emailField">Email</label>
-                        <input type="text" name="email" placeholder="Enter email" id="emailField">
+                        <input type="text" name="email" class="h_w" placeholder="Enter email" id="emailField">
                     </div>
                     <div class="control">
                         <label for="ageRangeField">Select Category</label>
-                        <select id="ageRangeField" name="category">
+                        <select id="ageRangeField" class="h_w" name="category">
                             <option>Report a bug</option>
                             <option>Give your Feedback</option>
                             <option>Not Getting Email</option>

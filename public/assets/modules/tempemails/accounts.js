@@ -20,6 +20,7 @@ const app = new VueCommon({
         email_search: null,
         new_email: null,
         pusher: null,
+        new_email_code: null,
 
     },
     mounted: function () {
@@ -41,6 +42,7 @@ const app = new VueCommon({
 
         //---------------------------------------------------------------
         this.listAccounts();
+        this.generateNewEmailCode();
         //---------------------------------------------------------------
 /*        setInterval(function () {
             this.silentFetch();
@@ -94,6 +96,29 @@ const app = new VueCommon({
             this.processHttpRequest(url, params, this.listAccountsAfter);
         },
         //---------------------------------------------------------------------
+        checkNewEmailCode: function () {
+            if(!this.new_email_code)
+            {
+                this.new_email_code = this.genUID();
+            }
+        },
+        //---------------------------------------------------------------------
+        generateNewEmailCode: function () {
+
+            this.new_email_code = this.genUID();
+        },
+        //---------------------------------------------------------------------
+        genUID: function () {
+            var text = "";
+            var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+            for (var i = 0; i < 5; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            return text;
+        },
+        //---------------------------------------------------------------------
+
         listAccountsAfter: function (data) {
             NProgress.done();
             this.accounts = data;
@@ -116,17 +141,29 @@ const app = new VueCommon({
         //---------------------------------------------------------------------
         generateAccount: function () {
             var url = this.urls.inbox+"/generate/account";
-            var params = {};
-            this.processHttpRequest(url, params, this.generateAccountAfter);
+            var params = { username: this.new_email_code };
+
+
+            NProgress.start();
+            this.$http.post(url, params)
+                .then(response => {
+                    if(response.data.status == 'success')
+                    {
+                        alertify.success('Email Account Created')
+                    } else
+                    {
+                        this.errors(response.data.errors);
+                    }
+
+                    this.listAccounts();
+                    this.generateNewEmailCode();
+
+                    NProgress.done();
+                });
+
         },
         //---------------------------------------------------------------------
-        generateAccountAfter: function (data) {
-            NProgress.done();
-            this.listAccounts();
 
-            alertify.success('Email Account Created')
-
-        },
         //---------------------------------------------------------------------
         setActiveAccount: function (event, account) {
             if(event)

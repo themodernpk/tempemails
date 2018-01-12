@@ -119,12 +119,22 @@
 
                 <div class="Field">
                     <input
-                            type="search"
+                            type="text"
                             name="search"
-                            placeholder="type..."
-                            class="SearchBox-query"/>
+                            v-model="new_email_code"
+                            v-on:blur="checkNewEmailCode()"
+                            maxlength="5"
+                            class="SearchBox-query address"/>
+
+                    <input
+                            type="search"
+                            disabled
+                            name="search"
+                            placeholder="@tempemails.io"
+                            class="SearchBox-query suffix domain"/>
 
                     <button
+                            v-on:click="generateAccount()"
                             type="submit"
                             class="Btn SearchBox-submitBtn"><i class="fa fa-plus"></i></button>
                 </div>

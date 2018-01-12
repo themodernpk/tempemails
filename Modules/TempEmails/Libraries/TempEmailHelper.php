@@ -12,8 +12,29 @@ class TempEmailHelper
     {
 
         $insert['inbox'] = $inbox;
-        $insert['username'] = strtolower(str_random(5));
+
+        if($request->has('username'))
+        {
+            $insert['username'] = $request->get('username');
+        } else
+        {
+            $insert['username'] = strtolower(str_random(5));
+        }
+
         $insert['email'] = $insert['username']."@tempemails.io";
+
+        $exist = TeAccount::where('email', $insert['email'])->first();
+
+        if($exist)
+        {
+
+            $response['status'] = 'failed';
+            $response['errors'][]= "Already Exist";
+
+            return $response;
+
+        }
+
 
         $insert['ip'] = $request->ip();
 
