@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{$data->title}}</title>
+    <?php $version = \Config::get('tempemails.version'); ?>
 
     <meta name="description" content="{{$data->description}}" />
 
@@ -67,7 +68,7 @@
                         data-setup='{"fluid": true}'>
                     <source src="{{moduleAssets('tempemails')}}/index/img/intro.mp4" type="video/mp4"></source>
 
-                    <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to aweb browser that
+                    <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that
                         <a href="http://videojs.com/html5-video-support/" target="_blank">
                             supports HTML5 video
                         </a>
@@ -382,6 +383,14 @@ if($data->agent->is('Windows'))
 
 
             NProgress.start();
+
+            var token = $('meta[name=csrf-token]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": token
+                }
+            });
 
             var ajaxOpt = {
                 method: 'POST',

@@ -135,9 +135,13 @@ a{
 }
 
 .logo-con{
-    width: 230px;
+    width: 300px;
     float: left;
 
+}
+
+.logo{
+    position: relative;
 }
 
 .logo a{
@@ -150,6 +154,14 @@ a{
     color: #fff;
 }
 
+.logo small{
+    position: absolute;
+    top: 18px;
+    right: -23px;
+    color: #fff;
+    font-weight: 200;
+    font-size: 11px;
+}
 
 
 .login a{
@@ -633,6 +645,9 @@ a{
     margin-bottom: 20px;
 }
 
+
+
+
 .new-email{
     position: fixed;
     width: 250px;
@@ -656,6 +671,8 @@ a{
 .new-email:hover, .new-email:hover i{
     color: #c8d2f1;
 }
+
+
 
 .nicescroll-cursors{
     border: none!important;
@@ -752,3 +769,4 @@ a{
 .strikethrough {
     text-decoration: line-through;
 }
+

@@ -13,12 +13,71 @@
     <script>hljs.initHighlightingOnLoad();
         new Clipboard('.clickToCopy',{
             text: function(trigger) {
-
                 return trigger.getAttribute('href');
             }
         });
     </script>
 
+    <script>
+
+        $(document).ready(function() {
+            $('.popup-with-zoom-anim').magnificPopup({
+                type: 'inline',
+                fixedContentPos: false,
+                fixedBgPos: true,
+                overflowY: 'auto',
+                closeBtnInside: true,
+                preloader: false,
+                midClick: false,
+                removalDelay: 300,
+                mainClass: 'my-mfp-zoom-in'
+            });
+
+            $('.counter').counterUp({
+                delay: 30,
+                time: 1500
+            });
+
+
+            $(".buzzForm").submit(function (e) {
+                e.preventDefault();
+
+
+                NProgress.start();
+
+                var token = $('meta[name=csrf-token]').attr('content');
+
+                $.ajaxSetup({
+                    headers: {
+                        "X-CSRFToken": token
+                    }
+                });
+
+                var ajaxOpt = {
+                    method: 'POST',
+                    url: '{{\URL::route('te.notify.admin')}}',
+                    async: true,
+                    context: this,
+                };
+                var  data = $(this).serialize();
+                if (data) {
+                    ajaxOpt.data = data;
+                }
+                $.ajax(ajaxOpt).done(function (response) {
+                    NProgress.done();
+                    if (response.status == "success") {
+                        alertify.success('Message Sent!');
+                    } else {
+                        $.each(response.errors, function (index, object) {
+                            alertify.error(object);
+                        });
+                    }
+                });
+
+
+            });
+        });
+    </script>
 @stop
 
 @section('content')

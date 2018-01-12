@@ -12,16 +12,18 @@ class NewEmail implements ShouldBroadcast
 {
     use SerializesModels;
 
-    public $mail;
+    public $account_id;
+    public $message_id;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(TeMail $mail)
+    public function __construct($account_id, $message_id)
     {
-        $this->mail = $mail;
+        $this->account_id = $account_id;
+        $this->message_id = $message_id;
     }
 
     /**
@@ -31,13 +33,14 @@ class NewEmail implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-
-        return new PrivateChannel('account.'.$this->mail->account->id);
+        return new PrivateChannel('account.'.$this->account_id);
     }
+
+
 
     public function broadcastWith()
     {
-        return ['id' => $this->mail->id];
+        return ['id' => $this->message_id];
     }
 
 

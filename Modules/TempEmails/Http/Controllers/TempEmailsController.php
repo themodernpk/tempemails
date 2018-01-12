@@ -11,6 +11,7 @@ use Modules\Core\Entities\User;
 use Modules\TempEmails\Entities\TeAccount;
 use Modules\TempEmails\Entities\TeMail;
 use Modules\TempEmails\Entities\TeStat;
+use Modules\TempEmails\Libraries\TempEmailHelper;
 
 class TempEmailsController extends Controller
 {
@@ -43,6 +44,9 @@ class TempEmailsController extends Controller
         {
             $inbox = uniqid();
         }
+
+        $response = TempEmailHelper::generateAccount($request, $inbox);
+
         return redirect()->route('te.apps', [$inbox])->withCookie(cookie()->forever('inbox', $inbox));
     }
     //-----------------------------------------------------------
@@ -73,7 +77,8 @@ class TempEmailsController extends Controller
     //-----------------------------------------------------------
     public function accountList(Request $request, $inbox)
     {
-        $list = TeAccount::select('id', 'inbox', 'username', 'email', 'expired_at', 'expired', 'created_at')->where('inbox', $inbox);
+        $list = TeAccount::select('id', 'inbox', 'username', 'email', 'expired_at', 'expired', 'created_at')
+            ->where('inbox', $inbox);
         $list->withCount('unreadMails');
         $list->withCount('mails');
 
@@ -161,34 +166,9 @@ class TempEmailsController extends Controller
     //-----------------------------------------------------------
     public function generateAccount(Request $request, $inbox)
     {
-        $insert['inbox'] = $inbox;
-        $insert['username'] = strtolower(str_random(5));
-        $insert['email'] = $insert['username']."@tempemails.io";
 
-        $insert['ip'] = $request->ip();
+        $response = TempEmailHelper::generateAccount($request, $inbox);
 
-        if(\Auth::user() || $insert['ip'] ==  '103.196.221.19')
-        {
-            if(\Auth::user())
-            {
-                $insert['core_user_id'] = \Auth::user()->id;
-                $insert['created_by'] = \Auth::user()->id;;
-            }
-            $insert['hours'] = \Config::get("tempemails.life_span_without_login");
-
-        } else
-        {
-            $insert['hours'] = \Config::get("tempemails.life_span_with_login");
-
-        }
-        $insert['expired_at'] = \Carbon::now()->addHours($insert['hours']);
-
-        $account = TeAccount::create($insert);
-
-        TeStat::create(array('type' => 'account', 'ip'=>$insert['ip']));
-
-        $response['status'] = 'success';
-        $response['data'] = $account;
         return response()->json($response);
     }
     //-----------------------------------------------------------

@@ -7,6 +7,9 @@
     <title>@if(isset($data->title)){{$data->title}}@else{{Config::get('core.name')}}
         v{{Config::get('core.version')}}@endif</title>
 
+
+    <?php $version = \Config::get('tempemails.version'); ?>
+
     <meta name="csrf-token" id="_token" content="{{ csrf_token() }}">
 
     <link href="https://fonts.googleapis.com/css?family=Baloo+Bhaina|Source+Sans+Pro:200|Roboto" rel="stylesheet">
@@ -14,11 +17,12 @@
     <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/alertify.min.css" />
     <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/highlight-default.min.css"/>
 
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/nprogress.css" />
-    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/simple-grid.css" />
-    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/index/css/magnific-popup.css">
-    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/style.css" />
+    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/nprogress.css?v={{$version}}" />
+    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/simple-grid.css?v={{$version}}" />
+    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/index/css/magnific-popup.css?v={{$version}}">
+    <link rel="stylesheet" href="{{moduleAssets('tempemails')}}/style.css?v={{$version}}" />
 
 
 
@@ -31,7 +35,6 @@
 @include("tempemails::pages.partials.tracking_codes")
 
 <div id="app" v-cloak>
-
 
 <!--start op popup-->
 @include("tempemails::pages.partials.contact_popup")
@@ -54,7 +57,13 @@
 
             </div>
             <div class="logo fl">
-                <a href="https://tempemails.io" class="thick">tempemails</span><span class="thin">.io</span></a>
+                {{--<a href="https://tempemails.io" class="thick">tempemails</span><span class="thin">.io</span></a>--}}
+
+                <div class="logo"><a href="{{URL::to("/")}}">@include("tempemails::pages.partials.logo_svg") </a>
+
+                    <small class="thin">v{{$version}}</small>
+                </div>
+
             </div>
         </div>
 
@@ -105,7 +114,25 @@
 
 
             </div>
-            <button class="new-email" v-on:click="generateAccount()"><i class="fa fa-plus"></i> &nbsp; ADD NEW EMAIL ACCOUNT</button>
+
+            <div class="action-bar">
+
+                <div class="Field">
+                    <input
+                            type="search"
+                            name="search"
+                            placeholder="type..."
+                            class="SearchBox-query"/>
+
+                    <button
+                            type="submit"
+                            class="Btn SearchBox-submitBtn"><i class="fa fa-plus"></i></button>
+                </div>
+
+
+            </div>
+
+            {{--<button class="new-email" v-on:click="generateAccount()"><i class="fa fa-plus"></i> &nbsp; ADD NEW EMAIL ACCOUNT</button>--}}
         </div>
         <!--/account list-->
 
@@ -335,15 +362,14 @@
 <script src="{{moduleAssets('tempemails')}}/pusher.min.js"></script>
 <script src="{{moduleAssets('tempemails')}}/index/js/jquery.magnific-popup.min.js"></script>
 
-<script src="{{moduleAssets('tempemails')}}/Pagination.js"></script>
-<script src="{{moduleAssets('tempemails')}}/VueCommon.js"></script>
-<script src="{{moduleAssets('tempemails')}}/accounts.js"></script>
+<script src="{{moduleAssets('tempemails')}}/Pagination.js?v={{$version}}"></script>
+<script src="{{moduleAssets('tempemails')}}/VueCommon.js?v={{$version}}"></script>
+<script src="{{moduleAssets('tempemails')}}/accounts.js?v={{$version}}"></script>
 
 
 <script>
     $(document).ready(function()
     {
-
 
         var browser_h = $(window).height();
         var middle_h = browser_h-200;
@@ -385,7 +411,69 @@
 
 
 
+
     })(document, window, jQuery);
+
+
+
+</script>
+
+<script>
+
+    $(document).ready(function() {
+        $('.popup-with-zoom-anim').magnificPopup({
+            type: 'inline',
+            fixedContentPos: false,
+            fixedBgPos: true,
+            overflowY: 'auto',
+            closeBtnInside: true,
+            preloader: false,
+            midClick: false,
+            removalDelay: 300,
+            mainClass: 'my-mfp-zoom-in'
+        });
+
+
+
+        $(".buzzForm").submit(function (e) {
+            e.preventDefault();
+
+            console.log('-->clicked');
+
+            NProgress.start();
+
+            var token = $('meta[name=csrf-token]').attr('content');
+
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": token
+                }
+            });
+
+            var ajaxOpt = {
+                method: 'POST',
+                url: '{{\URL::route('te.notify.admin')}}',
+                async: true,
+                context: this,
+            };
+            var  data = $(this).serialize();
+            if (data) {
+                ajaxOpt.data = data;
+            }
+            $.ajax(ajaxOpt).done(function (response) {
+                NProgress.done();
+                if (response.status == "success") {
+                    alertify.success('Message Sent!');
+                } else {
+                    $.each(response.errors, function (index, object) {
+                        alertify.error(object);
+                    });
+                }
+            });
+
+
+        });
+    });
 </script>
 
 <!--/common js-->

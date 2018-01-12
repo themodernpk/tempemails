@@ -18,13 +18,14 @@
         "bogardo/mailgun": "^5.0",
         "php-http/guzzle6-adapter": "^1.1",
         "fedeisas/laravel-mail-css-inliner": "~1.5",
-        "laravel-notification-channels/pusher-push-notifications": "^1.0",
-        "pusher/pusher-php-server": "^2.6",
+
         "bugsnag/bugsnag-laravel": "^2.0",
         "intervention/image": "^2.3",
         "php-imap/php-imap": "~2.0",
         "stevebauman/purify": "1.1.*",
-        "jenssegers/agent": "^2.5"
+        "jenssegers/agent": "^2.5",
+        "laravel-notification-channels/pusher-push-notifications": "^1.0",
+        "pusher/pusher-php-server": "2.6"
     },
     "require-dev": {
         "fzaninotto/faker": "^1.6",
@@ -39,7 +40,8 @@
             "database"
         ],
         "files": [
-            "Modules/Core/helpers.php"
+            "Modules/Core/helpers.php",
+            "Modules/TempEmails/tempemails-helper.php"
         ],
         "psr-4": {
             "App\\": "app/",

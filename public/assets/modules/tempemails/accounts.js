@@ -64,6 +64,9 @@ const app = new VueCommon({
         //---------------------------------------------------------------------
         //---------------------------------------------------------------------
         silentFetch: function () {
+
+            console.log("silent loader", this.emails);
+
             var url = this.urls.inbox+"/account/list";
             var params = {};
             this.$http.post(url, params)
@@ -78,6 +81,7 @@ const app = new VueCommon({
                 this.$http.post(url, params)
                     .then(response => {
                         this.emails = response.data.data.data;
+                        //console.log("email", this.emails);
                     });
             }
 
@@ -86,21 +90,24 @@ const app = new VueCommon({
         listAccounts: function () {
             var url = this.urls.inbox+"/account/list";
             var params = {};
+            console.log("list url", url);
             this.processHttpRequest(url, params, this.listAccountsAfter);
         },
         //---------------------------------------------------------------------
         listAccountsAfter: function (data) {
             NProgress.done();
             this.accounts = data;
-
-
             var self = this;
             this.accounts.forEach(function (account)
             {
-                var channel = self.pusher.subscribe('private-account.'+account.id);
+                var channelName = 'private-account.'+account.id;
+                //console.log("channelName", channelName);
+                var channel = self.pusher.subscribe(channelName);
                 channel.bind("email.created", function(data) {
-                    self.silentFetch();
-                    console.log("event", data);
+                    //self.silentFetch();
+                    //console.log("email created event", data);
+                    self.listAccounts();
+                    self.fetchEmails();
                 });
             });
 
@@ -116,6 +123,9 @@ const app = new VueCommon({
         generateAccountAfter: function (data) {
             NProgress.done();
             this.listAccounts();
+
+            alertify.success('Email Account Created')
+
         },
         //---------------------------------------------------------------------
         setActiveAccount: function (event, account) {
@@ -295,7 +305,6 @@ const app = new VueCommon({
         $("#html").css('height', middle_h);
 
         document.getElementById('iframeTag').contentWindow.location.reload();
-
     });
 
     //----------------------------------------------------------

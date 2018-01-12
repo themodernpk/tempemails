@@ -226,8 +226,7 @@ class TeAccount extends Model
             }
 
             TeAccount::saveAttachments($mail->getAttachments(), $message->id);
-
-            event(new NewEmail($message));
+            event(new NewEmail($account->id, $message->id));
         }
 
         $response['status'] = 'success';
