@@ -537,12 +537,14 @@ a{
     background-color: #fff;
     color: #848e9e;
     border: none;
-    padding: 6px 8px;
+    padding: 9px 8px 7px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 12px;
     cursor: pointer;
+    line-height: normal;
+    height: auto;
 }
 
 .btn-white i{
@@ -927,4 +929,8 @@ a{
 
 .tr-active{
     background: #f2f2f2;
+}
+
+#ascrail2001{
+    margin-left: -21px;
 }
