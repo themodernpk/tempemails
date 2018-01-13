@@ -41,6 +41,7 @@ const app = new VueCommon({
 
 
         //---------------------------------------------------------------
+
         this.listAccounts();
         this.generateNewEmailCode();
         //---------------------------------------------------------------
@@ -140,6 +141,12 @@ const app = new VueCommon({
                 });
             });
 
+            var self = this;
+
+            this.$nextTick(function () {
+                self.activateNiceScroll();
+
+            });
 
         },
         //---------------------------------------------------------------------
@@ -207,6 +214,12 @@ const app = new VueCommon({
             this.emails = [];
             this.emails = data.data;
             this.email_filter = data.data;
+            var self = this;
+
+            this.$nextTick(function () {
+                self.activateNiceScroll();
+
+            });
         },
 
         //---------------------------------------------------------------------
@@ -229,11 +242,14 @@ const app = new VueCommon({
             var self = this;
 
             this.$nextTick(function () {
-
                 self.resizeIframe();
-
+                self.activateNiceScroll();
 
             });
+        },
+        //---------------------------------------------------------------------
+        start: function () {
+            NProgress.start();
         },
         //---------------------------------------------------------------------
         resizeIframe: function () {
@@ -305,6 +321,25 @@ const app = new VueCommon({
             this.processHttpRequest(url, params, this.fetchEmails);
         },
         //---------------------------------------------------------------------
+        activateNiceScroll: function () {
+            var browser_h = $(window).height();
+            var middle_h = browser_h-200;
+            $(".scrollbar").css('height', middle_h);
+            $(".scrollbar").niceScroll({cursorcolor:"#575e71"});
+
+            var browser_h = $(window).height();
+            var middle_h = browser_h-180;
+            $(".scrollbar-emails").css('height', middle_h);
+            $(".scrollbar-emails").niceScroll({cursorcolor:"#575e71"});
+
+
+            /*var browser_h = $(window).height();
+            var middle_h = browser_h;
+            $(".scrollbar-email").css('max-height', middle_h);
+            $(".scrollbar-email").css('height', middle_h);
+            $(".scrollbar-email").niceScroll({cursorcolor:"#575e71"});*/
+        },
+        //---------------------------------------------------------------------
         filterEmails: function () {
 
             console.log("testing", this.email_search);
@@ -322,9 +357,57 @@ const app = new VueCommon({
             }
 
 
+        },
+        //---------------------------------------------------------------------
+        getFirstCharacter: function (string)
+        {
+            return string.charAt(0);
+        },
+        //---------------------------------------------------------------------
+        getColor: function (email) {
+
+
+
+            var char = this.getFirstCharacter(email);
+
+
+
+            char.toLowerCase();
+
+            var colorArray = [];
+            colorArray['a'] = '#';
+            colorArray['b'] = '#EC407A';
+            colorArray['c'] = '#AB47BC';
+            colorArray['d'] = '#8E24AA';
+            colorArray['e'] = '#D81B60';
+            colorArray['f'] = '#E53935';
+            colorArray['g'] = '#D81B60';
+            colorArray['h'] = '#1976D2';
+            colorArray['i'] = '#303F9F';
+            colorArray['j'] = '#512DA8';
+            colorArray['k'] = '#6200EA';
+            colorArray['l'] = '#0277BD';
+            colorArray['m'] = '#00838F';
+            colorArray['n'] = '#00695C';
+            colorArray['o'] = '#00BFA5';
+            colorArray['p'] = '#00B8D4';
+            colorArray['q'] = '#0091EA';
+            colorArray['r'] = '#558B2F';
+            colorArray['s'] = '#9E9D24';
+            colorArray['t'] = '#2E7D32';
+            colorArray['u'] = '#2E7D32';
+            colorArray['v'] = '#F9A825';
+            colorArray['w'] = '#FF8F00';
+            colorArray['x'] = '#EF6C00';
+            colorArray['y'] = '#F57F17';
+            colorArray['z'] = '#FF6F00';
+
+
+            var color_code = colorArray[char];
+
+            return color_code;
+
         }
-        //---------------------------------------------------------------------
-        //---------------------------------------------------------------------
         //---------------------------------------------------------------------
     },
     //-------------------------------------------------------------------

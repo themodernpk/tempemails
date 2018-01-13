@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <title>@if(isset($data->title)){{$data->title}}@else{{Config::get('core.name')}}
         v{{Config::get('core.version')}}@endif</title>
 
@@ -90,7 +90,9 @@
                 <h5><i class="fa fa-envelope"></i> EMAIL ACCOUNTS</h5>
 
                 <ul class="scrollbar" style="height: 500px">
-                    <li class="account-item" v-if="accounts" v-for="account in accounts">
+                    <li class="account-item" v-if="accounts" v-for="account in accounts"
+                    v-bind:class="{'active': account_active && account_active.id == account.id}"
+                    >
                         <a class="email-link clickToCopy"
                            v-bind:class="{'strikethrough': account.expired}"
                            v-bind:href="account.email"
@@ -138,6 +140,7 @@
                             v-on:click="generateAccount()"
                             type="submit"
                             class="Btn SearchBox-submitBtn"><i class="fa fa-plus"></i></button>
+
                 </div>
 
 
@@ -152,7 +155,7 @@
 
             <div class="page-header" >
                 <div class="page-header-left">
-                    <a class="thin clickToCopy" v-bind:href="account_active.email">@{{ account_active.email }} <span>Click To Copy</span></a>
+                    <a class="thin clickToCopy" v-bind:href="account_active.email">@{{ account_active.email }}<span>Click To Copy</span></a>
                 </div>
                 <div class="page-header-right">
                     <div class="btn-group">
@@ -163,6 +166,9 @@
                         <button class="btn-white" v-on:click="deleteAccount($event, account_active)">
                             <i class="fa fa-trash"></i>
                         </button>
+
+
+
                     </div>
 
                 </div>
@@ -211,12 +217,20 @@
                                     <tr  v-for="email in emails" class="fetchEmail"
                                          v-bind:class="{'tr-active': email_active.id == email.id}"
                                          v-on:click="fetchEmail($event, email)">
-                                        <td width="15"><span class="tag-circle">w</span></td>
-                                        <td><div class="subject" v-bind:class="{'read': email.read}">@{{ email.subject }}
+
+                                        <td width="15">
+                                                <span class="tag-circle"
+                                                      v-bind:style="{'background-color': getColor(email.from[0].email)}"
+                                                >@{{ getFirstCharacter(email.from[0].email) }}</span></td>
+
+
+                                        <td><div class="subject" v-bind:class="{'read': email.read}">
+                                                @{{ splitString(email.subject, 40) }}
                                                 <span class="text-small">From: @{{ email.from[0].email }}</span>
+                                                <div class="time">@{{ fromNow(email.received_at) }}</div>
                                             </div>
                                         </td>
-                                        <td><div class="time">@{{ fromNow(email.received_at) }}</div></td>
+
                                     </tr>
 
                                     </template>
@@ -226,12 +240,21 @@
                                         <tr  v-for="email in emails" class="fetchEmail"
 
                                              v-on:click="fetchEmail($event, email)">
-                                            <td width="15"><span class="tag-circle">w</span></td>
-                                            <td><div class="subject" v-bind:class="{'read': email.read}">@{{ email.subject }}
+
+
+                                            <td width="15">
+                                                <span class="tag-circle"
+                                                      v-bind:style="{'background-color': getColor(email.from[0].email)}"
+                                                >@{{ getFirstCharacter(email.from[0].email) }}</span></td>
+
+
+                                            <td><div class="subject" v-bind:class="{'read': email.read}">
+                                                    @{{ splitString(email.subject, 40) }}
                                                     <span class="text-small">From: @{{ email.from[0].email }}</span>
+                                                    <div class="time">@{{ fromNow(email.received_at) }}</div>
                                                 </div>
                                             </td>
-                                            <td><div class="time">@{{ fromNow(email.received_at) }}</div></td>
+
                                         </tr>
 
                                     </template>
@@ -401,22 +424,7 @@
     $(document).ready(function()
     {
 
-        var browser_h = $(window).height();
-        var middle_h = browser_h-200;
-        $(".scrollbar").css('height', middle_h);
-        $(".scrollbar").niceScroll({cursorcolor:"#575e71"});
 
-        var browser_h = $(window).height();
-        var middle_h = browser_h-180;
-        $(".scrollbar-emails").css('height', middle_h);
-        $(".scrollbar-emails").niceScroll({cursorcolor:"#575e71"});
-
-
-        var browser_h = $(window).height();
-        var middle_h = browser_h;
-        $(".scrollbar-email").css('max-height', middle_h);
-        $(".scrollbar-email").css('height', middle_h);
-        $(".scrollbar-email").niceScroll({cursorcolor:"#575e71"});
 
         hljs.initHighlightingOnLoad();
         new Clipboard('.clickToCopy',{

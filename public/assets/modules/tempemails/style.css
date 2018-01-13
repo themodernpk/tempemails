@@ -222,6 +222,11 @@ a{
 
 }
 
+.account-list .active{
+    background: #3b476d;
+}
+
+
 .account-list, .account-list h5{
     color: #686e81;
 }
@@ -237,7 +242,7 @@ a{
 }
 
 .account-list a{
-    color: #686e81;
+    color: #d8dcea;
 }
 
 .account-list ul{
@@ -261,11 +266,13 @@ a{
 
 .account-list ul li{
     position: relative;
+    margin: 0px 0px;
+    padding: 0px 0px 9px 0px;
 }
 
 .account-list ul li span{
     margin-top: 10px;
-    margin-right: 5px;
+    margin-right: -9px;
     margin-left: 15px;
     display: inline-block;
     width: 30px;
@@ -291,7 +298,7 @@ a{
      padding-left: 15px;
      line-height: 40px;
     margin-bottom: 2px;
-    font-size: 13px;
+    font-size: 14px;
  }
 
 .account-list ul .email-link:hover{
@@ -496,13 +503,16 @@ a{
 
 .tag-circle{
     border-radius: 20px;
-    padding: 10px 12px;
+    padding: 9px 12px;
     color: #fff;
     line-height: 20px;
     background-color: #ccc;
     display: block;
     font-size: 22px;
     margin: 0px 5px;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: 'Source Sans Pro', sans-serif;
 }
 
 
@@ -761,11 +771,11 @@ a{
 }
 
 .mail-count.read{
-    color: #686e81;
+    color: #d8dcea
 }
 
 .account-item p{
-    color: #686e81;
+    color: #a2a8bc;
     font-style: italic;
     font-size: 11px;
     margin: -5px 0px 0px 0px ;
