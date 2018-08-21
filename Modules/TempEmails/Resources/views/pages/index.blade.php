@@ -8,10 +8,6 @@
 
     <meta name="description" content="{{$data->description}}" />
 
-    <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=58e7359082f18900123d85fe&product=inline-share-buttons"></script>
-
-    <script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=58e7359082f18900123d85fe&product=inline-share-buttons"></script>
-
     <link rel="icon" href="https://tempemails.io/favicon.ico" type="image/x-icon">
     <!--start of stylesheet-->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100|Source+Sans+Pro:300,400,600,700" rel="stylesheet">
@@ -35,9 +31,11 @@
     <meta itemprop="description" content="{{$data->description}}">
     <meta itemprop="image" content="https://tempemails.io/logo-media.png">
 
-
     <meta name="csrf-token" id="_token" content="{{ csrf_token() }}">
 </head>
+
+<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=58e7359082f18900123d85fe&product=inline-share-buttons"></script>
+
 <body>
 @include("tempemails::pages.partials.tracking_codes")
 
@@ -50,7 +48,9 @@
     <div class="main_con">
         <div class="top_nav">
             <div class="logo"><a href="{{URL::to("/")}}">@include("tempemails::pages.partials.logo_svg")</a></div>
-            <div class="report"><a class="button popup-with-zoom-anim" href="#small-dialog">Buzz Me!</a></div>
+            <div class="report">
+                <a class="button popup-with-zoom-anim" href="#small-dialog">Buzz Me!</a>
+            </div>
 
         </div>
         <div class="main_video">
@@ -278,7 +278,7 @@
                     </div>
                     <div class="column">
                         <div class="ftr_right">
-                            <span>Share</span>
+                            {{--<span>Share</span>--}}
                             <div class="sharethis-inline-share-buttons"></div>
                         </div>
                     </div>
@@ -417,5 +417,6 @@ if($data->agent->is('Windows'))
         });
     });
 </script>
+
 </body>
 </html>

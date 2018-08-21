@@ -109,6 +109,8 @@ class TeAccount extends Model
     public static function syncMessages($request)
     {
 
+
+
         $inbox_config['hostname']= env('IMAP_HOST');
         $inbox_config['email']= env('IMAP_EMAIL');
         $inbox_config['password']= env('IMAP_PASSWORD');
@@ -117,12 +119,21 @@ class TeAccount extends Model
         $mailbox = new \PhpImap\Mailbox($inbox_config['hostname'], $inbox_config['email'],
                                         $inbox_config['password'], $inbox_config['upload_path']);
 
+
+        /*$res = $mailbox->deleteMail(42);
+        echo "<pre>";
+        print_r($res);
+        echo "</pre>";
+        die("<hr/>line number=123");*/
+
         $sync_from = date('d F Y');
         $mailUIDs = $mailbox->searchMailBox('SINCE "'.$sync_from.'"', SE_UID);
         //$mailUIDs = $mailbox->searchMailBox('UNSEEN', SE_UID);
+;
 
         foreach ($mailUIDs as $uid)
         {
+
 
             $message = TeMail::where('uid', $uid)
                 ->withTrashed()
@@ -163,16 +174,29 @@ class TeAccount extends Model
                 continue;
             }
 
+            $continue_next_uid = false;
             //create account
             foreach ($to as $account_item)
             {
                 if (strpos($account_item['email'], 'tempemails.io') !== false) {
+
+                    $account_item['email'] = trim($account_item['email']);
+
                     //check if account exist
                     $account = TeAccount::where('email', $account_item['email'])->withTrashed()->first();
 
                     if(!$account)
                     {
-                        if (\Auth::user())
+                        //if tempemail is not exist then delete the mail from server
+                        // because it does not belongs to any active account
+                        // this will reduce number of emails on the server
+
+                        $mailbox->deleteMail($uid);
+                        TeMail::where('uid', $uid)->forceDelete();
+                        $continue_next_uid = true;
+                        continue;
+
+                        /*if (\Auth::user())
                         {
                             $account_insert['core_user_id'] = \Auth::user()->id;
                         }
@@ -191,11 +215,17 @@ class TeAccount extends Model
                         {
                             $account_insert['created_by'] = Auth::user()->id;
                         }
-                        $account = TeAccount::create($account_insert);
+                        $account = TeAccount::create($account_insert);*/
+
                     }
 
 
                 }
+            }
+
+            if($continue_next_uid == true)
+            {
+                continue;
             }
 
 
@@ -352,14 +382,18 @@ class TeAccount extends Model
 
     }
     //-------------------------------------------------
-    public static function deleteExpiredAccounts()
+    public static function deleteExpiredAccounts($num_records=null)
     {
         //find expired account passed 7 days
         $date = \Carbon::now()->subDays(7)->format("Y-m-d");
 
-        $expired_accounts = TeAccount::withTrashed()->where('expired', 1)
-            ->where('expired_at', '<', $date)
-            ->get();
+        $expired_accounts = TeAccount::withTrashed()->where('expired', 1);
+        $expired_accounts->where('expired_at', '<', $date);
+        if(!is_null($num_records))
+        {
+            $expired_accounts->take($num_records);
+        }
+        $expired_accounts=  $expired_accounts->get();
 
         if(!$expired_accounts)
         {
@@ -401,13 +435,15 @@ class TeAccount extends Model
            }
         }
 
-        $account->delete();
+        $account->forceDelete();
         $response['status'] = 'failed';
         $response['messages'][]= 'Account deleted';
         return $response;
 
     }
     //-------------------------------------------------
+
+
     //-------------------------------------------------
     //-------------------------------------------------
 }

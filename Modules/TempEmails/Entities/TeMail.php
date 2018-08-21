@@ -21,7 +21,7 @@ class TeMail extends Model
     //-------------------------------------------------
 
     protected $fillable = [
-        'te_account_id', 'received_at', 'received_at', 'uid', 'subject',
+        'te_account_id', 'received_at', 'received_at', 'uid', 'imap_msgno', 'subject',
         'message', 'message_text', 'message_raw',
         'meta', 'created_by', 'updated_by', 'deleted_by',
         'created_at', 'updated_at', 'deleted_at',
@@ -182,7 +182,7 @@ class TeMail extends Model
             {
                 $file_path = str_replace($base_url."/", "", $attachment->url);
                 \File::delete($file_path);
-                $attachment->delete();
+                $attachment->forceDelete();
             }
         }
 
@@ -193,15 +193,48 @@ class TeMail extends Model
         {
             foreach ($contacts as $contact)
             {
-                $contact->delete();
+                $contact->forceDelete();
             }
         }
 
         //delete mails
-        $mail->delete();
+        $mail->forceDelete();
 
         //delete mail from server
 
+
     }
+    //-------------------------------------------------
+    public static function imapDeleteMail($uids_array)
+    {
+        $inbox_config['hostname']= env('IMAP_HOST');
+        $inbox_config['email']= env('IMAP_EMAIL');
+        $inbox_config['password']= env('IMAP_PASSWORD');
+        $inbox_config['upload_path']= 'files/attachments';
+
+        $mailbox = new \PhpImap\Mailbox($inbox_config['hostname'], $inbox_config['email'],
+            $inbox_config['password'], $inbox_config['upload_path']);
+
+
+        $result['data'] = [];
+
+
+        if(is_array($uids_array) && count($uids_array) > 0)
+        {
+            $i = 0;
+            foreach ($uids_array as $uid)
+            {
+                $mailbox->deleteMail($uid);
+                $result['data'][$i] = $uid." is deleted from server";
+                $i++;
+            }
+        }
+
+        return $result;
+
+    }
+    //-------------------------------------------------
+    //-------------------------------------------------
+    //-------------------------------------------------
     //-------------------------------------------------
 }

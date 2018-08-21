@@ -77,20 +77,50 @@ class TempEmailsController extends Controller
     //-----------------------------------------------------------
     public function accountList(Request $request, $inbox)
     {
+
+        if($request->has('debug'))
+        {
+            \DB::enableQueryLog();
+
+        }
+
         $list = TeAccount::select('id', 'inbox', 'username', 'email', 'expired_at', 'expired', 'created_at')
             ->where('inbox', $inbox);
         $list->withCount('unreadMails');
         $list->withCount('mails');
 
+        $date = \Carbon::now()->subMonths(2)->format('Y-m-d');
+        $list->where('created_at', '>', $date);
+
         $list->orderBy('created_at', 'DESC');
+
         $response['data'] = $list->get();
         $response['status'] = 'success';
+
+
+        if($request->has('debug'))
+        {
+
+            $query = str_replace(array('?'), array('\'%s\''), $list->toSql());
+            $query = vsprintf($query, $list->getBindings());
+
+            dump($query);
+            die();
+        }
+
         return response()->json($response);
 
     }
     //-----------------------------------------------------------
     public function emailList(Request $request, $inbox)
     {
+
+        if($request->has('debug'))
+        {
+            \DB::enableQueryLog();
+
+        }
+
         $rules = array(
             'te_account_id' => 'required',
         );
@@ -113,10 +143,24 @@ class TempEmailsController extends Controller
         $list->with(['from', 'to', 'cc', 'attachments']);
         $list->orderBy('received_at', 'DESC');
 
-        $response['syncMessages'] = TeAccount::syncMessages($request);
+        $date = \Carbon::now()->subMonths(2)->format('Y-m-d');
+        $list->where('received_at', '>', $date);
+
+        //$response['syncMessages'] = TeAccount::syncMessages($request);
 
         $response['data'] = $list->paginate(10);
         $response['status'] = 'success';
+
+        if($request->has('debug'))
+        {
+
+            $query = str_replace(array('?'), array('\'%s\''), $list->toSql());
+            $query = vsprintf($query, $list->getBindings());
+
+            dump($query);
+            die();
+        }
+
         return response()->json($response);
     }
     //-----------------------------------------------------------
@@ -148,6 +192,9 @@ class TempEmailsController extends Controller
         $item->save();
         $response['data'] = $item;
         $response['data']['formatted'] = $response['data']->formattedHtml();
+
+
+
 
         $response['status'] = 'success';
         return response()->json($response);

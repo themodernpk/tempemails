@@ -18,6 +18,7 @@ class CronController extends Controller
     public function perMinute(Request $request)
     {
         $response['syncMessages'] = TeAccount::syncMessages($request);
+        //$response['deleteExpiredAccounts'] = TeAccount::deleteExpiredAccounts(10);
         return response()->json($response);
     }
     //------------------------------------------------
@@ -25,12 +26,16 @@ class CronController extends Controller
     {
         $response['checkExpiryIsNull'] = TeAccount::checkExpiryIsNull($request);
         $response['checkExpiry'] = TeAccount::checkExpiry($request);
+
+        $response['deleteExpiredAccounts'] = TeAccount::deleteExpiredAccounts(50);
+
         return response()->json($response);
     }
     //------------------------------------------------
     public function perDay()
     {
         $response['deleteExpiredAccounts'] = TeAccount::deleteExpiredAccounts();
+
         return response()->json($response);
     }
     //------------------------------------------------

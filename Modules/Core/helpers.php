@@ -180,6 +180,18 @@ function getConstant($key)
     return $val;
 }
 //---------------------------------------------------
+function getRawQuery($model_query, $dump = false)
+{
+    $query = str_replace(array('?'), array('\'%s\''), $model_query->toSql());
+    $query = vsprintf($query, $model_query->getBindings());
+
+    if($dump)
+    {
+        dump($query);
+    }
+
+    return $query;
+}
 //---------------------------------------------------
 //---------------------------------------------------
 //---------------------------------------------------

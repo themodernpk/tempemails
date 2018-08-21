@@ -89,7 +89,7 @@
 
                 <h5><i class="fa fa-envelope"></i> EMAIL ACCOUNTS</h5>
 
-                <ul class="scrollbar" style="height: 500px">
+                <ul class="scrollbar" style="height: 500px; margin-top: 70px;">
                     <li class="account-item" v-if="accounts" v-for="account in accounts"
                     v-bind:class="{'active': account_active && account_active.id == account.id}"
                     >

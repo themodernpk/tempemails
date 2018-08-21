@@ -90,7 +90,17 @@ var VueCommon = Vue.extend({
             return false;
         },
         //---------------------------------------------------------------------
+        splitString: function (string, characters) {
 
+            if(string != "" && string != null)
+            {
+                if(string.length > characters){
+                    string = string.substring(0,characters)+"...";
+                }
+            }
+
+            return string;
+        },
         //---------------------------------------------------------------------
         //---------------------------------------------------------------------
     }

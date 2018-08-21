@@ -897,7 +897,6 @@ float:right;
 .main_features{ padding:80px 0px; }
 .fetaure_cont{ text-align:center; }
 .rept_features{ padding:0 45px; }
-
 .button.button-blue , button.button-blue, input[type='button'].button-blue, input[type='reset'].button-blue, input[type='submit'].button-blue{ background-color:#4984e1; border-color:#4984e1; color:#fff; }
 
 .button.button-blue:hover , button.button-blue:hover, input[type='button'].button-blue:hover, input[type='reset'].button-blue:hover, input[type='submit'].button-blue:hover{ background-color:#34495e; border-color:#34495e; color:#fff; }
@@ -946,6 +945,8 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#5ea97c', endCo
 .ftr_right #st-1.st-has-labels .st-btn {
 min-width: 50px;
 }
+.ftr_right #st-1 .st-btn.st-first > span{ display:none !important;}
+#st-1 .st-total > span.st-label{ font-weight:400;}
 .ftr_right #st-1 .st-btn > span{ display:inline-block !important; min-width:auto; font-weight:300; margin-top:8px; padding:0;font-size: 12px;}
 
 .ftr_right{ float:right; }
