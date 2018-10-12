@@ -2,10 +2,10 @@
     <div class="form_heading">
         <span><img src="{{moduleAssets('tempemails')}}/index/img/user.svg" alt="" width="145"></span>
         <h2>Hello, Nice to meet you</h2>
-        <span>We'd love to hear from you</span><br/>
-        <span style="background: #fffadb; padding: 5px 8px; display: block; border-radius: 5px;">Best way to raise issues, bugs or request  new features is via <br/><a class="button button-blue" target="_blank" href="https://github.com/webreinvent/tempemails/issues">GitHub</a></span>
+        {{--<span>We'd love to hear from you</span>--}}<br/>
+        <span style="background: #fffadb; padding: 5px 8px; margin-bottom: 10px; display: block; border-radius: 5px;">Best way to raise issues, bugs or request  new features is via <br/><a class="button button-blue" target="_blank" href="https://github.com/webreinvent/tempemails/issues">GitHub</a></span>
     </div>
-    <div class="fed_form">
+    {{--<div class="fed_form">
         <form class="buzzForm">
             <fieldset>
                 <div class="control-group">
@@ -31,6 +31,6 @@
                 <input class="button button-blue" type="submit" value="Send">
             </fieldset>
         </form>
-    </div>
+    </div>--}}
 
 </div>
